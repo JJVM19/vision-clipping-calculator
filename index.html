@@ -1,935 +1,1019 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Vision Clipping — Pricing Calculator</title>
-<meta name="description" content="Estimate your monthly investment for Vision Clipping's short-form content distribution services.">
+<meta charset="utf-8" />
+<title>Vision Clipping — ROAS Calculator</title>
+<meta name="viewport" content="width=1024" />
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg: #0a0a0b;
-    --bg-card: #111214;
-    --bg-card-hover: #16171a;
-    --bg-input: #1a1b1e;
-    --border: #2e3035;
-    --border-focus: #5865F2;
-    --text: #dcddde;
-    --text-dim: #72767d;
-    --text-bright: #fff;
-    --accent: #5865F2;
-    --accent-hover: #4752c4;
-    --green: #23a55a;
-    --gold: #FFD700;
-    --red: #ed4245;
-    --purple: #a78bfa;
-    --radius: 10px;
+    --bg: #070707;
+    --bg-2: #0d0d0d;
+    --bg-3: #141414;
+    --fg: #eeeeee;
+    --fg-dim: rgba(238,238,238,0.70);
+    --fg-mid: rgba(238,238,238,0.50);
+    --fg-faint: rgba(238,238,238,0.38);
+    --hair: rgba(238,238,238,0.14);
+    --hair-strong: rgba(238,238,238,0.26);
+    --hair-hot: rgba(238,238,238,0.40);
+    --accent: #4f0006;
+    --accent-bright: #8a0912;
+    --accent-glow: rgba(167, 10, 20, 0.55);
+    --green: #3fd17a;
+    --green-deep: #14a858;
+    --amber: #f2b12a;
+    --red: #e05265;
+    --cyan: #5dd8e0;
+    --violet: #b388ff;
   }
-
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-
-  body {
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0;
     background: var(--bg);
-    color: var(--text);
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-    font-size: 15px;
-    line-height: 1.6;
+    color: var(--fg);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+    font-feature-settings: 'ss01', 'cv11';
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  body {
     min-height: 100vh;
+    padding: 32px 48px 120px;
+  }
+  body::before {
+    content: "";
+    position: fixed; inset: 0;
+    pointer-events: none;
+    background-image: radial-gradient(1200px 600px at 20% -10%, rgba(79,0,6,0.22), transparent 60%),
+                      radial-gradient(900px 500px at 100% 110%, rgba(79,0,6,0.12), transparent 60%);
+    z-index: 0;
   }
 
-  .page {
-    max-width: 880px;
-    margin: 0 auto;
-    padding: 48px 24px 80px;
-  }
-
-  /* Header */
-  .header {
-    text-align: center;
-    margin-bottom: 48px;
-  }
-  .header-badge {
-    display: inline-flex;
+  header {
+    position: relative;
+    display: flex;
     align-items: center;
-    gap: 8px;
-    font-size: 11px;
+    justify-content: space-between;
+    max-width: 1200px;
+    margin: 0 auto 56px;
+    z-index: 1;
+  }
+  .brand { display: flex; align-items: center; gap: 14px; }
+  .brand img { width: 44px; height: auto; display: block; }
+  .brand .wordmark {
+    font-size: 13px;
     font-weight: 600;
-    color: var(--accent);
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--fg);
+  }
+  .brand .wordmark span {
+    color: var(--fg-faint);
+    margin-left: 8px;
+    font-weight: 400;
+  }
+  .meta {
+    display: flex; gap: 28px; align-items: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--fg-mid);
     text-transform: uppercase;
     letter-spacing: 0.12em;
-    margin-bottom: 16px;
-    background: rgba(88,101,242,0.1);
-    padding: 6px 14px;
-    border-radius: 20px;
-    border: 1px solid rgba(88,101,242,0.2);
   }
-  .header-badge .dot {
+  .meta .live::before {
+    content: "";
+    display: inline-block;
     width: 6px; height: 6px;
     background: var(--green);
     border-radius: 50%;
-    animation: pulse 2s ease infinite;
+    margin-right: 8px;
+    vertical-align: middle;
+    box-shadow: 0 0 10px var(--green);
+    animation: pulse 1.6s ease-in-out infinite;
   }
-  @keyframes pulse {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.4; }
-  }
-  .header h1 {
-    font-size: 32px;
-    font-weight: 700;
-    color: var(--text-bright);
-    margin-bottom: 8px;
-    letter-spacing: -0.02em;
-  }
-  .header p {
-    font-size: 15px;
-    color: var(--text-dim);
-    max-width: 520px;
+  @keyframes pulse { 50% { opacity: 0.3; } }
+
+  main {
+    position: relative;
+    z-index: 1;
+    max-width: 640px;
     margin: 0 auto;
   }
 
-  /* Service selector */
-  .services {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 8px;
-    margin-bottom: 40px;
+  .lead { margin: 0 0 64px; }
+  .lead .eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--fg-mid);
+    margin-bottom: 18px;
   }
-  .service-btn {
-    background: var(--bg-card);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 16px 12px;
-    text-align: center;
-    cursor: pointer;
-    transition: all 0.2s;
-    position: relative;
-  }
-  .service-btn:hover {
-    background: var(--bg-card-hover);
-    border-color: #3e4046;
-  }
-  .service-btn.active {
-    border-color: var(--accent);
-    background: rgba(88,101,242,0.08);
-  }
-  .service-btn .icon {
-    font-size: 24px;
-    margin-bottom: 8px;
-    display: block;
-  }
-  .service-btn .label {
-    font-size: 12px;
+  .lead h1 {
+    font-size: 32px;
     font-weight: 600;
-    color: var(--text-bright);
-    display: block;
-    margin-bottom: 2px;
+    letter-spacing: -0.025em;
+    line-height: 1.1;
+    margin: 0 0 12px;
   }
-  .service-btn .sublabel {
-    font-size: 10px;
-    color: var(--text-dim);
-    display: block;
+  .lead p {
+    font-size: 15px;
+    color: var(--fg-dim);
+    margin: 0;
+    line-height: 1.55;
   }
-  .service-btn .check {
-    position: absolute;
-    top: 8px;
-    right: 8px;
-    width: 18px;
-    height: 18px;
-    border-radius: 50%;
-    border: 1.5px solid var(--border);
+
+  /* Block header */
+  .block {
+    border-top: 1px solid var(--hair-strong);
+    padding: 44px 0 48px;
+  }
+  .block-head {
     display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.2s;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 32px;
   }
-  .service-btn.active .check {
-    background: var(--accent);
-    border-color: var(--accent);
+  .block-head .num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--fg-mid);
+    letter-spacing: 0.22em;
+    font-weight: 500;
   }
-  .service-btn.active .check::after {
-    content: '';
-    width: 6px; height: 6px;
-    background: #fff;
-    border-radius: 50%;
-  }
-
-  /* Sections */
-  .calc-section {
-    background: var(--bg-card);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 28px;
-    margin-bottom: 16px;
-    display: none;
-  }
-  .calc-section.visible {
-    display: block;
-  }
-  .calc-section h2 {
-    font-size: 16px;
+  .block-head h2 {
+    font-size: 20px;
     font-weight: 600;
-    color: var(--text-bright);
-    margin-bottom: 4px;
+    letter-spacing: -0.015em;
+    margin: 4px 0 0;
   }
-  .calc-section .desc {
-    font-size: 13px;
-    color: var(--text-dim);
-    margin-bottom: 20px;
+  .block-head .hint {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--fg-mid);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    padding: 5px 9px;
+    border: 1px solid var(--hair-strong);
   }
 
-  /* Form controls */
-  .field {
-    margin-bottom: 20px;
+  /* Input grid */
+  .inputs {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1px;
+    background: var(--hair-strong);
+    border: 1px solid var(--hair-strong);
   }
+  .inputs.single { grid-template-columns: 1fr; }
+  .field {
+    background: var(--bg-2);
+    padding: 20px 22px 18px;
+    position: relative;
+    transition: background 0.15s ease, box-shadow 0.15s ease;
+    display: flex;
+    flex-direction: column;
+    min-height: 128px;
+  }
+  .field:hover {
+    background: var(--bg-3);
+    box-shadow: inset 0 0 0 1px rgba(138,9,18,0.45);
+  }
+  .field:hover label { color: rgba(255,180,186,0.95); }
   .field label {
     display: block;
-    font-size: 12px;
-    font-weight: 500;
-    color: var(--text);
-    margin-bottom: 6px;
-  }
-  .field .hint {
     font-size: 11px;
-    color: var(--text-dim);
-    margin-top: 4px;
-  }
-
-  /* Package selector pills */
-  .pkg-pills {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 8px;
-  }
-  .pkg-pill {
-    background: var(--bg-input);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 14px;
-    cursor: pointer;
-    transition: all 0.2s;
-    text-align: center;
-  }
-  .pkg-pill:hover {
-    border-color: #3e4046;
-    background: var(--bg-card-hover);
-  }
-  .pkg-pill.active {
-    border-color: var(--accent);
-    background: rgba(88,101,242,0.06);
-  }
-  .pkg-pill .pkg-name {
-    font-size: 11px;
-    font-weight: 600;
+    font-family: 'JetBrains Mono', monospace;
+    letter-spacing: 0.16em;
     text-transform: uppercase;
-    letter-spacing: 0.06em;
-    color: var(--text-dim);
-    margin-bottom: 4px;
-  }
-  .pkg-pill.active .pkg-name {
-    color: var(--accent);
-  }
-  .pkg-pill .pkg-price {
-    font-size: 20px;
-    font-weight: 700;
-    color: var(--text-bright);
-  }
-  .pkg-pill .pkg-price span {
-    font-size: 12px;
-    font-weight: 400;
-    color: var(--text-dim);
-  }
-  .pkg-pill .pkg-detail {
-    font-size: 11px;
-    color: var(--text-dim);
-    margin-top: 4px;
-  }
-  .pkg-pill .pkg-badge {
-    display: inline-block;
-    font-size: 9px;
+    color: rgba(238,238,238,0.78);
     font-weight: 600;
-    background: var(--accent);
-    color: #fff;
-    padding: 2px 7px;
-    border-radius: 3px;
-    margin-bottom: 6px;
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
+    margin-bottom: 14px;
   }
-
-  /* Sliders & inputs */
-  input[type="range"] {
-    -webkit-appearance: none;
-    width: 100%;
-    height: 4px;
-    background: var(--border);
-    border-radius: 2px;
-    outline: none;
-    margin: 8px 0;
+  .field .input-row {
+    display: flex; align-items: baseline; gap: 6px;
+    flex-wrap: nowrap;
+    min-width: 0;
   }
-  input[type="range"]::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    width: 18px;
-    height: 18px;
-    background: var(--accent);
-    border-radius: 50%;
-    cursor: pointer;
-    border: 2px solid var(--bg-card);
-    box-shadow: 0 2px 6px rgba(0,0,0,0.3);
-  }
-  .range-labels {
-    display: flex;
-    justify-content: space-between;
-    font-size: 11px;
-    color: var(--text-dim);
-  }
-  .range-value {
-    font-size: 18px;
-    font-weight: 600;
-    color: var(--text-bright);
-    margin-bottom: 4px;
-  }
-
-  input[type="number"] {
-    background: var(--bg-input);
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    color: var(--text-bright);
-    font-size: 15px;
-    font-family: inherit;
-    padding: 10px 14px;
-    width: 100%;
-    outline: none;
-    transition: border-color 0.2s;
-  }
-  input[type="number"]:focus {
-    border-color: var(--accent);
-  }
-
-  select {
-    background: var(--bg-input);
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    color: var(--text-bright);
-    font-size: 14px;
-    font-family: inherit;
-    padding: 10px 14px;
-    width: 100%;
-    outline: none;
-    cursor: pointer;
-    -webkit-appearance: none;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2372767d' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: right 12px center;
-  }
-  select:focus { border-color: var(--accent); }
-
-  /* Toggle */
-  .toggle-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 12px 0;
-    border-top: 1px solid var(--border);
-  }
-  .toggle-row:first-child { border-top: none; }
-  .toggle-label {
-    font-size: 13px;
-    color: var(--text);
-  }
-  .toggle-label small {
-    display: block;
-    font-size: 11px;
-    color: var(--text-dim);
+  .field .prefix, .field .suffix {
+    color: var(--fg-mid);
+    font-size: 16px;
     font-weight: 400;
-    margin-top: 2px;
-  }
-  .toggle {
-    position: relative;
-    width: 40px;
-    height: 22px;
+    white-space: nowrap;
     flex-shrink: 0;
   }
-  .toggle input {
-    opacity: 0;
-    width: 0;
-    height: 0;
-  }
-  .toggle .slider {
-    position: absolute;
-    inset: 0;
-    background: var(--border);
-    border-radius: 11px;
-    cursor: pointer;
-    transition: 0.2s;
-  }
-  .toggle .slider::before {
-    content: '';
-    position: absolute;
-    width: 16px;
-    height: 16px;
-    left: 3px;
-    top: 3px;
-    background: #fff;
-    border-radius: 50%;
-    transition: 0.2s;
-  }
-  .toggle input:checked + .slider {
-    background: var(--accent);
-  }
-  .toggle input:checked + .slider::before {
-    transform: translateX(18px);
-  }
-
-  /* Summary panel */
-  .summary {
-    background: var(--bg-card);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 28px;
-    position: sticky;
-    top: 24px;
-    margin-top: 8px;
-  }
-  .summary h3 {
-    font-size: 14px;
-    font-weight: 600;
-    color: var(--text-bright);
-    margin-bottom: 20px;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-  }
-  .summary-line {
-    display: flex;
-    justify-content: space-between;
-    align-items: baseline;
-    padding: 8px 0;
-    font-size: 13px;
-  }
-  .summary-line .line-label {
-    color: var(--text);
-  }
-  .summary-line .line-label small {
-    color: var(--text-dim);
-    font-size: 11px;
-  }
-  .summary-line .line-value {
-    font-weight: 600;
-    color: var(--text-bright);
-    font-variant-numeric: tabular-nums;
-  }
-  .summary-divider {
+  .field .prefix { font-size: 22px; font-weight: 300; }
+  .field input[type="number"] {
+    background: transparent;
     border: none;
-    border-top: 1px solid var(--border);
-    margin: 8px 0;
-  }
-  .summary-total {
-    display: flex;
-    justify-content: space-between;
-    align-items: baseline;
-    padding: 12px 0 4px;
-  }
-  .summary-total .total-label {
-    font-size: 14px;
-    font-weight: 600;
-    color: var(--text-bright);
-  }
-  .summary-total .total-value {
-    font-size: 28px;
+    color: var(--fg);
+    font-family: 'Inter', sans-serif;
+    font-size: 26px;
     font-weight: 700;
-    color: var(--text-bright);
-    font-variant-numeric: tabular-nums;
-  }
-  .summary-total .total-value span {
-    font-size: 14px;
-    font-weight: 400;
-    color: var(--text-dim);
-  }
-  .summary-note {
-    font-size: 11px;
-    color: var(--text-dim);
-    margin-top: 4px;
-    line-height: 1.5;
-  }
-  .summary-empty {
-    text-align: center;
-    padding: 24px 0;
-    color: var(--text-dim);
-    font-size: 13px;
-  }
-  .summary-empty .icon { font-size: 28px; margin-bottom: 8px; display: block; }
-
-  /* CTA */
-  .cta-btn {
-    display: block;
+    letter-spacing: -0.02em;
+    outline: none;
     width: 100%;
-    padding: 14px;
-    background: var(--accent);
-    color: #fff;
-    border: none;
-    border-radius: 8px;
-    font-size: 14px;
-    font-weight: 600;
-    font-family: inherit;
-    cursor: pointer;
-    margin-top: 16px;
-    transition: background 0.2s;
-    text-decoration: none;
-    text-align: center;
+    min-width: 0;
+    padding: 0;
+    font-variant-numeric: tabular-nums;
   }
-  .cta-btn:hover { background: var(--accent-hover); }
-
-  /* Stats bar */
-  .stats-bar {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 8px;
-    margin-bottom: 40px;
+  .field input[type="number"]:focus ~ .focus-line { transform: scaleX(1); }
+  .field input[type="number"]::-webkit-outer-spin-button,
+  .field input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+  .field input[type="number"] { -moz-appearance: textfield; }
+  .focus-line {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 2px;
+    background: var(--accent-bright);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.2s ease;
   }
-  .stat-card {
-    background: var(--bg-card);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 16px;
-    text-align: center;
-  }
-  .stat-card .stat-value {
-    font-size: 22px;
-    font-weight: 700;
-    color: var(--text-bright);
-    margin-bottom: 2px;
-  }
-  .stat-card .stat-label {
+  .field .sub {
     font-size: 11px;
-    color: var(--text-dim);
-    text-transform: uppercase;
+    color: var(--fg-mid);
+    margin-top: auto;
+    padding-top: 10px;
+    font-family: 'JetBrains Mono', monospace;
     letter-spacing: 0.04em;
   }
 
-  /* Expansion accounts input */
-  .inline-field {
+  /* Slider field */
+  .slider-field {
+    padding: 20px 22px 22px;
+    background: var(--bg-2);
+    transition: background 0.2s, box-shadow 0.2s;
+  }
+  .slider-field:hover {
+    background: var(--bg-3);
+    box-shadow: inset 0 0 0 1px rgba(138,9,18,0.45);
+  }
+  .slider-field.standalone {
+    border: 1px solid var(--hair-strong);
+    margin-bottom: 24px;
+  }
+  .slider-field .slider-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 16px;
+  }
+  .slider-field label {
+    margin: 0;
+    font-size: 11px;
+    font-family: 'JetBrains Mono', monospace;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--fg-mid);
+    font-weight: 500;
+  }
+  .slider-field .value {
+    font-size: 24px;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.015em;
+  }
+  .slider-field .value .unit { color: var(--fg-mid); font-weight: 300; margin-left: 2px; font-size: 16px; }
+  input[type="range"] {
+    -webkit-appearance: none; appearance: none;
+    width: 100%; background: transparent; cursor: pointer;
+  }
+  input[type="range"]::-webkit-slider-runnable-track {
+    height: 3px;
+    background: linear-gradient(to right, var(--fg) 0%, var(--fg) var(--pct, 0%), var(--hair-strong) var(--pct, 0%), var(--hair-strong) 100%);
+  }
+  input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none; appearance: none;
+    width: 16px; height: 16px;
+    border-radius: 50%;
+    background: var(--fg);
+    margin-top: -6px;
+    box-shadow: 0 0 0 4px rgba(238,238,238,0.10);
+    transition: box-shadow 0.15s;
+  }
+  input[type="range"]:hover::-webkit-slider-thumb { box-shadow: 0 0 0 6px rgba(138, 9, 18, 0.45); }
+  input[type="range"]::-moz-range-track { height: 3px; background: var(--hair-strong); }
+  input[type="range"]::-moz-range-progress { height: 3px; background: var(--fg); }
+  input[type="range"]::-moz-range-thumb {
+    width: 16px; height: 16px; border: none; border-radius: 50%;
+    background: var(--fg);
+  }
+  .slider-field .ticks {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 10px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--fg-faint);
+  }
+
+  /* Budget summary */
+  .budget-summary {
+    margin-top: 22px;
+    padding: 16px 18px;
+    background: linear-gradient(90deg, rgba(138,9,18,0.18), rgba(138,9,18,0.04));
+    border-left: 3px solid var(--accent-bright);
+    font-size: 14px;
+    color: var(--fg-dim);
+    line-height: 1.6;
+  }
+  .budget-summary strong {
+    color: var(--fg);
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* HERO: expected views */
+  .hero-tile {
+    position: relative;
+    border: 1px solid var(--hair-hot);
+    background: linear-gradient(180deg, rgba(138,9,18,0.16), rgba(79,0,6,0.04) 60%, transparent);
+    padding: 32px 28px 30px;
+    overflow: hidden;
+    margin-bottom: 24px;
+  }
+  .hero-tile::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(600px 280px at 100% 0%, rgba(138,9,18,0.28), transparent 65%);
+    pointer-events: none;
+  }
+  .hero-inner { position: relative; z-index: 1; }
+  .hero-label {
+    font-size: 11px;
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--fg-dim);
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 14px;
   }
-  .inline-field input[type="number"] {
-    width: 100px;
+  .hero-label .eq {
+    color: var(--fg-faint);
+    font-size: 10px;
+    letter-spacing: 0.02em;
+    font-weight: 400;
+    text-transform: none;
   }
-
-  /* Footer */
-  .footer {
-    text-align: center;
-    padding: 40px 0 0;
-    border-top: 1px solid var(--border);
-    margin-top: 40px;
+  .hero-value {
+    font-size: 84px;
+    font-weight: 700;
+    letter-spacing: -0.045em;
+    line-height: 0.95;
+    font-variant-numeric: tabular-nums;
+    background: linear-gradient(180deg, #ffffff 0%, #ffb8bf 85%, #8a0912 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 0 0 60px rgba(138,9,18,0.35);
   }
-  .footer p {
+  .hero-sub {
+    margin-top: 14px;
     font-size: 12px;
-    color: var(--text-dim);
-    margin-bottom: 4px;
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--fg-mid);
+    letter-spacing: 0.04em;
   }
-  .footer a {
-    color: var(--accent);
-    text-decoration: none;
+  /* Output tiles */
+  .outputs {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    background: var(--bg-2);
+    border: 1px solid var(--hair-strong);
+  }
+  .out {
+    padding: 26px 22px 24px;
+    border-right: 1px solid var(--hair-strong);
+    position: relative;
+    transition: background 0.2s, box-shadow 0.2s;
+  }
+  .out:hover {
+    background: var(--bg-3);
+    box-shadow: inset 0 0 0 1px rgba(138,9,18,0.45);
+  }
+  .out:last-child { border-right: none; }
+  .out.full { grid-column: 1 / -1; border-right: none; border-top: 1px solid var(--hair-strong); }
+  .out .label {
+    font-size: 11px;
+    font-family: 'JetBrains Mono', monospace;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--fg-mid);
+    font-weight: 500;
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .out .label .eq {
+    color: var(--fg-faint);
+    font-size: 10px;
+    letter-spacing: 0.02em;
+    font-weight: 400;
+    text-transform: none;
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .out .value {
+    font-size: 40px;
+    font-weight: 600;
+    letter-spacing: -0.035em;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+  }
+  .out .value .small {
+    font-size: 20px;
+    color: var(--fg-mid);
+    font-weight: 400;
+  }
+  .out .sub {
+    margin-top: 12px;
+    font-size: 12px;
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--fg-mid);
+    letter-spacing: 0.04em;
   }
 
-  /* Responsive */
-  @media (max-width: 700px) {
-    .services { grid-template-columns: repeat(2, 1fr); }
-    .stats-bar { grid-template-columns: repeat(2, 1fr); }
-    .pkg-pills { grid-template-columns: 1fr; }
-    .header h1 { font-size: 24px; }
-    .page { padding: 32px 16px 60px; }
+  /* CPC block */
+  .cpc-block {
+    margin-top: 24px;
+    border: 1px solid var(--hair-strong);
+    background: var(--bg-2);
+    padding: 26px 24px 24px;
   }
-  @media (max-width: 420px) {
-    .services { grid-template-columns: 1fr 1fr; }
-    .service-btn { padding: 12px 8px; }
-    .service-btn .icon { font-size: 20px; }
+  .cpc-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 22px;
+    gap: 20px;
   }
+  .cpc-top .label {
+    font-size: 11px;
+    font-family: 'JetBrains Mono', monospace;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--fg-mid);
+    font-weight: 500;
+    margin-bottom: 10px;
+  }
+  .cpc-top .value {
+    font-size: 60px;
+    font-weight: 600;
+    letter-spacing: -0.04em;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+    transition: color 0.3s;
+  }
+  .cpc-top .status {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    padding: 7px 11px;
+    border: 1px solid currentColor;
+    align-self: flex-start;
+    background: rgba(255,255,255,0.03);
+  }
+  .status.green { color: var(--green); }
+  .status.amber { color: var(--amber); }
+  .status.red { color: var(--red); }
+
+  .heat {
+    position: relative;
+    height: 10px;
+    display: grid;
+    grid-template-columns: 1fr 2fr 1fr;
+    gap: 2px;
+    margin-bottom: 12px;
+  }
+  .heat .zone { position: relative; }
+  .heat .zone.green { background: linear-gradient(90deg, rgba(63,209,122,0.45), rgba(63,209,122,0.85)); }
+  .heat .zone.amber { background: linear-gradient(90deg, rgba(242,177,42,0.6), rgba(242,177,42,0.85), rgba(242,177,42,0.6)); }
+  .heat .zone.red { background: linear-gradient(90deg, rgba(224,82,101,0.85), rgba(224,82,101,0.45)); }
+  .heat-scale {
+    position: relative;
+    height: 18px;
+    margin-bottom: 18px;
+  }
+  .heat-scale .tick {
+    position: absolute;
+    top: 0;
+    transform: translateX(-50%);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--fg-mid);
+    font-weight: 500;
+  }
+  .marker {
+    position: absolute;
+    top: -5px;
+    height: 20px;
+    width: 2px;
+    background: var(--fg);
+    transform: translateX(-50%);
+    transition: left 0.35s cubic-bezier(.2,.7,.2,1);
+    box-shadow: 0 0 14px rgba(238,238,238,0.7);
+    z-index: 2;
+  }
+  .marker::after {
+    content: "";
+    position: absolute;
+    top: -6px; left: 50%;
+    transform: translateX(-50%);
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-top: 6px solid var(--fg);
+  }
+  .benchmark {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px 24px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--fg-mid);
+    letter-spacing: 0.04em;
+    padding-top: 16px;
+    border-top: 1px dashed var(--hair-strong);
+  }
+  .benchmark span strong { color: var(--fg); font-weight: 600; }
+
+  /* Funnel divider */
+  .roas-divider {
+    text-align: center;
+    margin: 80px 0 0;
+    position: relative;
+  }
+  .roas-divider::before,
+  .roas-divider::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    width: 36%;
+    height: 1px;
+    background: var(--hair-hot);
+  }
+  .roas-divider::before { left: 0; }
+  .roas-divider::after { right: 0; }
+  .roas-divider span {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--fg-dim);
+  }
+  .funnel-head {
+    text-align: center;
+    margin: 20px 0 32px;
+  }
+  .funnel-head h2 {
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: -0.025em;
+    margin: 0 0 8px;
+  }
+  .funnel-head p {
+    color: var(--fg-dim);
+    font-size: 14px;
+    margin: 0;
+  }
+
+  /* Mode switcher */
+  .mode-switch {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    border: 1px solid var(--hair-strong);
+    margin-bottom: 28px;
+    background: var(--bg-2);
+    position: relative;
+  }
+  .mode-switch button {
+    background: transparent;
+    border: none;
+    color: var(--fg-mid);
+    padding: 16px 18px;
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    text-align: left;
+    position: relative;
+    transition: color 0.2s, background 0.2s;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .mode-switch button:first-child { border-right: 1px solid var(--hair-strong); }
+  .mode-switch button .m-label {
+    font-size: 10px;
+    font-family: 'JetBrains Mono', monospace;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--fg-faint);
+    font-weight: 500;
+  }
+  .mode-switch button .m-title {
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+  }
+  .mode-switch button.on {
+    background: rgba(138,9,18,0.18);
+    color: var(--fg);
+  }
+  .mode-switch button.on .m-label { color: var(--accent-bright); }
+  .mode-switch button.on::after {
+    content: "";
+    position: absolute;
+    left: 0; right: 0; bottom: -1px;
+    height: 2px;
+    background: var(--accent-bright);
+  }
+  .mode-switch button:not(.on):hover { color: var(--fg-dim); background: rgba(238,238,238,0.02); }
+
+  /* ROAS headline */
+  .roas-headline {
+    margin-top: 28px;
+    padding: 44px 28px 40px;
+    border: 1px solid var(--hair-strong);
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    background: var(--bg-2);
+  }
+  .roas-headline::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: var(--roas-bg, transparent);
+    pointer-events: none;
+    transition: background 0.5s;
+    opacity: 0.9;
+  }
+  .roas-headline > * { position: relative; z-index: 1; }
+  .roas-headline .label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--fg-mid);
+    margin-bottom: 16px;
+  }
+  .roas-headline .value {
+    font-size: 104px;
+    font-weight: 700;
+    letter-spacing: -0.055em;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+    transition: color 0.3s, background 0.3s;
+    display: inline-flex;
+    align-items: baseline;
+  }
+  .roas-headline .value.rainbow {
+    background: linear-gradient(92deg, #5dd8e0 0%, #3fd17a 28%, #f2b12a 55%, #ff7a59 80%, #b388ff 100%);
+    background-size: 200% 100%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: rainbow-shift 5s linear infinite;
+    filter: drop-shadow(0 0 18px rgba(179,136,255,0.28));
+  }
+  @keyframes rainbow-shift {
+    0% { background-position: 0% 50%; }
+    100% { background-position: 200% 50%; }
+  }
+  .roas-headline .value .x {
+    font-size: 44px;
+    font-weight: 400;
+    margin-left: 4px;
+    color: var(--fg-mid);
+    -webkit-text-fill-color: var(--fg-mid);
+  }
+  .roas-headline .interp {
+    margin-top: 20px;
+    font-size: 15px;
+    color: var(--fg-dim);
+    max-width: 380px;
+    margin-left: auto;
+    margin-right: auto;
+    line-height: 1.5;
+  }
+  .roas-headline .interp strong { color: var(--fg); font-weight: 600; }
+
+  /* Sub outputs under ROAS */
+  .roas-subs {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    background: var(--bg-2);
+    border: 1px solid var(--hair-strong);
+    border-top: none;
+  }
+
+  /* Hidden helper */
+  .hidden { display: none !important; }
+
+  /* Disclaimer */
+  .disclaimer {
+    max-width: 640px;
+    margin: 80px auto 0;
+    text-align: center;
+    font-size: 11px;
+    color: var(--fg-mid);
+    line-height: 1.7;
+    font-family: 'JetBrains Mono', monospace;
+    letter-spacing: 0.05em;
+  }
+
+  /* Tweaks panel */
+  .tweaks {
+    position: fixed;
+    bottom: 20px; right: 20px;
+    width: 280px;
+    background: #0d0d0d;
+    border: 1px solid var(--hair-strong);
+    z-index: 10;
+    display: none;
+    font-family: 'Inter', sans-serif;
+  }
+  .tweaks.on { display: block; }
+  .tweaks .t-head {
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--hair-strong);
+    font-size: 11px;
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--fg-dim);
+  }
+  .tweaks .t-body { padding: 14px; }
+  .tweaks .t-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; font-size: 12px; }
+  .tweaks .t-row label { color: var(--fg-dim); }
+  .tweaks button {
+    width: 100%;
+    background: transparent;
+    border: 1px solid var(--hair-strong);
+    color: var(--fg-dim);
+    padding: 8px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    cursor: pointer;
+    margin-top: 10px;
+  }
+  .tweaks button:hover { color: var(--fg); border-color: var(--accent-bright); }
+
 </style>
 </head>
 <body>
 
-<div class="page">
-  <!-- Header -->
-  <div class="header">
-    <div class="header-badge">
-      <span class="dot"></span>
-      Vision Clipping
-    </div>
-    <h1>Pricing Calculator</h1>
-    <p>Estimate your monthly investment across our service lines. Select the services you need and configure your setup below.</p>
+<header>
+  <div class="brand">
+    <img src="assets/logo-light.png" alt="Vision Clipping" id="brand-logo" />
+    <div class="wordmark">Vision Clipping<span>/ ROAS Calc</span></div>
   </div>
+  <div class="meta"></div>
+</header>
 
-  <!-- Social proof stats -->
-  <div class="stats-bar">
-    <div class="stat-card">
-      <div class="stat-value">1.5B+</div>
-      <div class="stat-label">Views generated</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-value">$638K+</div>
-      <div class="stat-label">Paid to clippers</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-value">23.5K</div>
-      <div class="stat-label">Videos created</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-value">3</div>
-      <div class="stat-label">Platforms covered</div>
-    </div>
-  </div>
+<main>
 
-  <!-- Service toggles -->
-  <div class="services">
-    <div class="service-btn" data-service="internal" onclick="toggleService('internal')">
-      <div class="check"></div>
-      <span class="icon">🎬</span>
-      <span class="label">Internal Team</span>
-      <span class="sublabel">Managed accounts</span>
-    </div>
-    <div class="service-btn" data-service="campaign" onclick="toggleService('campaign')">
-      <div class="check"></div>
-      <span class="icon">📢</span>
-      <span class="label">Public Campaign</span>
-      <span class="sublabel">Clipper network</span>
-    </div>
-    <div class="service-btn" data-service="meta" onclick="toggleService('meta')">
-      <div class="check"></div>
-      <span class="icon">📱</span>
-      <span class="label">Meta Ads</span>
-      <span class="sublabel">Paid amplification</span>
-    </div>
-    <div class="service-btn" data-service="consulting" onclick="toggleService('consulting')">
-      <div class="check"></div>
-      <span class="icon">🧠</span>
-      <span class="label">Consulting</span>
-      <span class="sublabel">Strategy & advisory</span>
-    </div>
-  </div>
+  <section class="lead">
+    <div class="eyebrow">Sales Desk · v1.0</div>
+    <h1>Plug in your numbers.<br/>See what your budget buys.</h1>
+    <p>Campaign math and CPC benchmark — recalculated live as you type.</p>
+  </section>
 
-  <!-- Section 1: Internal Clipping Team -->
-  <div class="calc-section" id="sec-internal">
-    <h2>Internal Clipping Team</h2>
-    <p class="desc">We build and manage a private network of dedicated clipping accounts across TikTok, Instagram Reels, and YouTube Shorts. All packages are ops fees only — clipping budget is separate.</p>
+  <!-- BLOCK 1 -->
+  <section class="block">
+    <div class="block-head">
+      <div>
+        <div class="num">01 / Budget</div>
+        <h2>Set the campaign pool</h2>
+      </div>
+      <div class="hint">CPM model</div>
+    </div>
 
-    <div class="field">
-      <label>Select package</label>
-      <div class="pkg-pills">
-        <div class="pkg-pill" data-pkg="starter" onclick="selectPkg('starter')">
-          <div class="pkg-name">Starter</div>
-          <div class="pkg-price">$4,000<span>/mo</span></div>
-          <div class="pkg-detail">3 managed accounts</div>
+    <div class="inputs">
+      <div class="field">
+        <label>Campaign budget</label>
+        <div class="input-row">
+          <span class="prefix">$</span>
+          <input type="number" id="budget" value="5000" min="0" step="100" />
         </div>
-        <div class="pkg-pill" data-pkg="growth" onclick="selectPkg('growth')">
-          <div class="pkg-badge">Most popular</div>
-          <div class="pkg-name">Growth</div>
-          <div class="pkg-price">$7,500<span>/mo</span></div>
-          <div class="pkg-detail">5 managed accounts</div>
+        <div class="sub">CPM pool only · excl. retainer</div>
+        <div class="focus-line"></div>
+      </div>
+      <div class="field">
+        <label>CPM rate</label>
+        <div class="input-row">
+          <span class="prefix">$</span>
+          <input type="number" id="cpm" value="1.00" min="0" step="0.05" />
+          <span class="suffix">/ 1k views</span>
         </div>
-        <div class="pkg-pill" data-pkg="scale" onclick="selectPkg('scale')">
-          <div class="pkg-name">Scale</div>
-          <div class="pkg-price">$12,500<span>/mo</span></div>
-          <div class="pkg-detail">8-10 managed accounts</div>
+        <div class="sub">Paid to clippers</div>
+        <div class="focus-line"></div>
+      </div>
+      <div class="field">
+        <label>Min payout / clip</label>
+        <div class="input-row">
+          <span class="prefix">$</span>
+          <input type="number" id="minPay" value="10" min="0" step="1" />
+        </div>
+        <div class="sub">Floor — below this, no payment</div>
+        <div class="focus-line"></div>
+      </div>
+      <div class="field">
+        <label>Max payout / clip</label>
+        <div class="input-row">
+          <span class="prefix">$</span>
+          <input type="number" id="maxPay" value="500" min="0" step="10" />
+        </div>
+        <div class="sub">Cap — one viral clip can't drain pool</div>
+        <div class="focus-line"></div>
+      </div>
+    </div>
+
+    <div class="budget-summary">
+      Your <strong id="s-budget">$5,000</strong> budget funds between <strong id="s-min">10</strong> and <strong id="s-max">500</strong> paid clips. Clips below <strong id="s-minPay">$10</strong> don't get paid; top clips cap at <strong id="s-maxPay">$500</strong>.
+    </div>
+  </section>
+
+  <!-- BLOCK 2 -->
+  <section class="block">
+    <div class="block-head">
+      <div>
+        <div class="num">02 / Reach &amp; cost</div>
+        <h2>What the budget buys</h2>
+      </div>
+      <div class="hint">Computed</div>
+    </div>
+
+    <!-- HERO: Expected views -->
+    <div class="hero-tile">
+      <div class="hero-inner">
+        <div class="hero-label">Expected views <span class="eq">= Budget ÷ CPM × 1k × Overperformance</span></div>
+        <div class="hero-value" id="v-views">5,000,000</div>
+        <div class="hero-sub">Across all paid clips · earned and overperformance included</div>
+      </div>
+      <div class="hero-bloom"></div>
+    </div>
+
+    <!-- Overperformance slider -->
+    <div class="slider-field standalone">
+      <div class="slider-top">
+        <label>Overperformance multiplier <span style="color:var(--fg-faint); font-weight:400; text-transform:none; letter-spacing:0.04em; margin-left:6px;">· views earned past budget</span></label>
+        <div class="value" id="v-over">1.0<span class="unit">×</span></div>
+      </div>
+      <input type="range" id="over" min="1" max="10" step="0.1" value="1.0" />
+      <div class="ticks">
+        <span>1×</span><span>3×</span><span>5×</span><span>7×</span><span>10×</span>
+      </div>
+    </div>
+
+    <!-- CTR slider + Expected clicks side-by-side -->
+    <div class="inputs" style="margin-top: 24px;">
+      <div class="slider-field">
+        <div class="slider-top">
+          <label>View → Click rate</label>
+          <div class="value" id="v-ctr">1.00<span class="unit">%</span></div>
+        </div>
+        <input type="range" id="ctr" min="0.1" max="10" step="0.1" value="1.0" />
+        <div class="ticks">
+          <span>0.1%</span><span>2.5%</span><span>5%</span><span>7.5%</span><span>10%</span>
         </div>
       </div>
-    </div>
-
-    <div class="field" id="expansion-field" style="display:none">
-      <label>Additional accounts (Scale+ expansion)</label>
-      <div class="inline-field">
-        <input type="number" id="extra-accounts" min="0" max="40" step="10" value="0" onchange="calc()" oninput="calc()">
-        <span class="hint">+$1,500/mo per 10 extra accounts (up to 50 total)</span>
+      <div class="field" style="display:flex; flex-direction:column; justify-content:center;">
+        <label>Expected clicks</label>
+        <div class="input-row" style="align-items:baseline;">
+          <span style="font-size:32px; font-weight:600; letter-spacing:-0.025em; font-variant-numeric:tabular-nums;" id="v-clicks">50,000</span>
+        </div>
+        <div class="sub">Driven to landing page · = Views × CTR</div>
       </div>
     </div>
 
-    <div class="field">
-      <label>Monthly clipping budget</label>
-      <div class="range-value" id="clip-budget-display">$1,500</div>
-      <input type="range" id="clip-budget" min="0" max="15000" step="250" value="1500" oninput="calc()">
-      <div class="range-labels">
-        <span>$0</span>
-        <span>$15,000</span>
+    <div class="cpc-block">
+      <div class="cpc-top">
+        <div>
+          <div class="label">Cost per click <span class="eq">= Budget ÷ Clicks</span></div>
+          <div class="value" id="v-cpc">$0.10</div>
+        </div>
+        <div class="status green" id="v-cpc-status">Beats paid</div>
       </div>
-      <p class="hint">Client-funded. We charge a 5% management fee on this budget.</p>
-    </div>
-  </div>
 
-  <!-- Section 2: Public Clipping Campaign -->
-  <div class="calc-section" id="sec-campaign">
-    <h2>Public Clipping Campaign</h2>
-    <p class="desc">Budget-based deployment across the Content Rewards clipper network. Clippers earn based on views generated. Minimum $5,000 campaign budget.</p>
-
-    <div class="field">
-      <label>Campaign budget</label>
-      <div class="range-value" id="campaign-budget-display">$15,000</div>
-      <input type="range" id="campaign-budget" min="5000" max="100000" step="1000" value="15000" oninput="calc()">
-      <div class="range-labels">
-        <span>$5,000</span>
-        <span>$100,000</span>
+      <div class="heat">
+        <div class="zone green"></div>
+        <div class="zone amber"></div>
+        <div class="zone red"></div>
+        <div class="marker" id="marker" style="left:2%"></div>
       </div>
-      <p class="hint">5% management fee applies. Est. views: <strong id="est-views">7-10M</strong></p>
-    </div>
-  </div>
-
-  <!-- Section 3: Meta Ads -->
-  <div class="calc-section" id="sec-meta">
-    <h2>Meta Ads Management</h2>
-    <p class="desc">Top-performing organic clips become paid ad creatives. We manage the ad account, creative rotation, and budget allocation. 12% of ad spend, $1,500/mo minimum.</p>
-
-    <div class="field">
-      <label>Monthly ad spend</label>
-      <div class="range-value" id="ad-spend-display">$10,000</div>
-      <input type="range" id="ad-spend" min="1000" max="100000" step="500" value="10000" oninput="calc()">
-      <div class="range-labels">
-        <span>$1,000</span>
-        <span>$100,000</span>
+      <div class="heat-scale">
+        <span class="tick" style="left:0%">$0</span>
+        <span class="tick" style="left:25%">$1</span>
+        <span class="tick" style="left:75%">$3</span>
+        <span class="tick" style="left:100%">$5+</span>
       </div>
-      <p class="hint">Client-funded ad spend. We charge 12% management fee ($1,500/mo floor).</p>
-    </div>
-  </div>
 
-  <!-- Section 4: Consulting -->
-  <div class="calc-section" id="sec-consulting">
-    <h2>Consulting</h2>
-    <p class="desc">Strategy, content architecture, distribution planning, and campaign structure. Advisory only — no execution at this tier.</p>
-
-    <div class="field">
-      <label>Consulting format</label>
-      <select id="consult-type" onchange="calc()">
-        <option value="hourly">Hourly — $450/hr</option>
-        <option value="halfday">Half day — $1,800 (4 hours)</option>
-        <option value="strategy">Strategy pack — $4,500 (full audit + 90-day roadmap)</option>
-        <option value="monthly" selected>Monthly advisory — $2,500/mo</option>
-      </select>
-    </div>
-
-    <div class="field" id="consult-hours-field">
-      <label>Estimated hours per month</label>
-      <input type="number" id="consult-hours" min="1" max="40" value="2" onchange="calc()" oninput="calc()">
-    </div>
-  </div>
-
-  <!-- Summary -->
-  <div class="summary" id="summary">
-    <h3>Monthly estimate</h3>
-    <div id="summary-lines">
-      <div class="summary-empty">
-        <span class="icon">👆</span>
-        Select a service above to get started
+      <div class="benchmark">
+        <span><strong>Google Ads</strong> $1–3</span>
+        <span><strong>Meta</strong> $0.50–3</span>
+        <span><strong>TikTok</strong> $1–3</span>
+        <span><strong>YouTube</strong> $3–5</span>
       </div>
     </div>
-  </div>
+  </section>
 
-  <!-- Footer -->
-  <div class="footer">
-    <p>All prices in USD. Packages require a 3-month minimum commitment.</p>
-    <p>Campaign budgets and ad spend are client-funded and billed separately.</p>
-    <p style="margin-top: 12px; color: #4e5058;">&copy; 2026 Vision Clipping</p>
-  </div>
-</div>
+  <p class="disclaimer">
+    Estimates based on your inputs. Actual performance depends on creative, audience fit, and funnel quality.
+  </p>
+</main>
 
 <script>
-const state = {
-  services: new Set(),
-  pkg: null,
-};
+const fmtUSD0 = n => '$' + Math.round(n).toLocaleString('en-US');
+const fmtUSD2 = n => '$' + n.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+const fmtInt = n => Math.round(n).toLocaleString('en-US');
 
-const PKG_PRICES = { starter: 4000, growth: 7500, scale: 12500 };
-const PKG_ACCOUNTS = { starter: '3', growth: '5', scale: '8-10' };
-const CONSULT_PRICES = { hourly: 450, halfday: 1800, strategy: 4500, monthly: 2500 };
+const $ = id => document.getElementById(id);
 
-function fmt(n) {
-  return '$' + n.toLocaleString('en-US');
-}
+function recalc() {
+  const budget = Math.max(0, +$('budget').value || 0);
+  const cpm = Math.max(0.01, +$('cpm').value || 0.01);
+  const minPay = Math.max(0, +$('minPay').value || 0);
+  const maxPay = Math.max(1, +$('maxPay').value || 1);
+  const ctr = Math.max(0.001, +$('ctr').value || 0.001) / 100;
+  const over = Math.max(1, +$('over').value || 1);
 
-function toggleService(id) {
-  const btn = document.querySelector(`.service-btn[data-service="${id}"]`);
-  if (state.services.has(id)) {
-    state.services.delete(id);
-    btn.classList.remove('active');
+  // Block 1
+  const maxClips = budget / Math.max(1, minPay);
+  const minClips = budget / Math.max(1, maxPay);
+  $('s-budget').textContent = fmtUSD0(budget);
+  $('s-min').textContent = fmtInt(minClips);
+  $('s-max').textContent = fmtInt(maxClips);
+  $('s-minPay').textContent = fmtUSD0(minPay);
+  $('s-maxPay').textContent = fmtUSD0(maxPay);
+
+  // Block 2
+  const baseViews = (budget / cpm) * 1000;
+  const views = baseViews * over;
+  const clicks = views * ctr;
+  const cpc = clicks > 0 ? budget / clicks : 0;
+
+  $('v-views').textContent = fmtInt(views);
+  $('v-clicks').textContent = fmtInt(clicks);
+  $('v-cpc').textContent = fmtUSD2(cpc);
+  $('v-ctr').innerHTML = (ctr*100).toFixed(2) + '<span class="unit">%</span>';
+  $('v-over').innerHTML = over.toFixed(1) + '<span class="unit">×</span>';
+
+  // CPC heat marker: 0-1 → 0-25%, 1-3 → 25-75%, 3-5+ → 75-100%
+  let pct;
+  if (cpc <= 1) pct = (cpc / 1) * 25;
+  else if (cpc <= 3) pct = 25 + ((cpc - 1) / 2) * 50;
+  else pct = 75 + Math.min(1, (cpc - 3) / 2) * 25;
+  pct = Math.max(0.5, Math.min(99.5, pct));
+  $('marker').style.left = pct + '%';
+
+  const cpcEl = $('v-cpc');
+  const statusEl = $('v-cpc-status');
+  statusEl.classList.remove('green','amber','red');
+  if (cpc < 1) {
+    cpcEl.style.color = 'var(--green)';
+    statusEl.classList.add('green');
+    statusEl.textContent = 'Beats paid ads';
+  } else if (cpc <= 3) {
+    cpcEl.style.color = 'var(--amber)';
+    statusEl.classList.add('amber');
+    statusEl.textContent = 'In line with paid';
   } else {
-    state.services.add(id);
-    btn.classList.add('active');
-  }
-  document.getElementById('sec-' + id).classList.toggle('visible', state.services.has(id));
-
-  // Auto-select growth pkg if internal just toggled on and no pkg selected
-  if (id === 'internal' && state.services.has('internal') && !state.pkg) {
-    selectPkg('growth');
+    cpcEl.style.color = 'var(--red)';
+    statusEl.classList.add('red');
+    statusEl.textContent = 'Losing to paid';
   }
 
-  calc();
-}
-
-function selectPkg(pkg) {
-  state.pkg = pkg;
-  document.querySelectorAll('.pkg-pill').forEach(p => p.classList.remove('active'));
-  document.querySelector(`.pkg-pill[data-pkg="${pkg}"]`).classList.add('active');
-  document.getElementById('expansion-field').style.display = pkg === 'scale' ? 'block' : 'none';
-  if (pkg !== 'scale') document.getElementById('extra-accounts').value = 0;
-  calc();
-}
-
-function estimateViews(budget) {
-  // ~$1-2 CPM entertainment benchmark
-  const lowViews = budget / 2;
-  const highViews = budget / 1;
-  const fmtViews = (v) => {
-    if (v >= 1000000) return (v / 1000000).toFixed(v >= 10000000 ? 0 : 1) + 'M';
-    if (v >= 1000) return Math.round(v / 1000) + 'K';
-    return v.toString();
-  };
-  return fmtViews(lowViews) + '-' + fmtViews(highViews);
-}
-
-function calc() {
-  const lines = [];
-  let total = 0;
-
-  // Internal team
-  if (state.services.has('internal') && state.pkg) {
-    const pkgPrice = PKG_PRICES[state.pkg];
-    const extraAccounts = parseInt(document.getElementById('extra-accounts').value) || 0;
-    const expansionBlocks = Math.ceil(extraAccounts / 10);
-    const expansionCost = state.pkg === 'scale' ? expansionBlocks * 1500 : 0;
-    const clipBudget = parseInt(document.getElementById('clip-budget').value) || 0;
-    const clipFee = Math.round(clipBudget * 0.05);
-
-    lines.push({
-      label: `Internal team — ${state.pkg.charAt(0).toUpperCase() + state.pkg.slice(1)}`,
-      detail: `${PKG_ACCOUNTS[state.pkg]} accounts`,
-      value: pkgPrice
-    });
-
-    if (expansionCost > 0) {
-      lines.push({
-        label: `Scale+ expansion`,
-        detail: `+${extraAccounts} accounts`,
-        value: expansionCost
-      });
-    }
-
-    if (clipBudget > 0) {
-      lines.push({
-        label: `Clipping budget mgmt fee`,
-        detail: `5% of ${fmt(clipBudget)}`,
-        value: clipFee
-      });
-    }
-
-    total += pkgPrice + expansionCost + clipFee;
-
-    // Update display
-    document.getElementById('clip-budget-display').textContent = fmt(clipBudget);
-  }
-
-  // Public campaign
-  if (state.services.has('campaign')) {
-    const campaignBudget = parseInt(document.getElementById('campaign-budget').value) || 0;
-    const campaignFee = Math.round(campaignBudget * 0.05);
-
-    lines.push({
-      label: `Public campaign mgmt fee`,
-      detail: `5% of ${fmt(campaignBudget)} budget`,
-      value: campaignFee
-    });
-
-    total += campaignFee;
-
-    document.getElementById('campaign-budget-display').textContent = fmt(campaignBudget);
-    document.getElementById('est-views').textContent = estimateViews(campaignBudget);
-  }
-
-  // Meta ads
-  if (state.services.has('meta')) {
-    const adSpend = parseInt(document.getElementById('ad-spend').value) || 0;
-    const metaFee = Math.max(1500, Math.round(adSpend * 0.12));
-
-    lines.push({
-      label: `Meta ads management`,
-      detail: `12% of ${fmt(adSpend)} spend`,
-      value: metaFee
-    });
-
-    total += metaFee;
-
-    document.getElementById('ad-spend-display').textContent = fmt(adSpend);
-  }
-
-  // Consulting
-  if (state.services.has('consulting')) {
-    const type = document.getElementById('consult-type').value;
-    const hoursField = document.getElementById('consult-hours-field');
-    let consultCost = 0;
-    let consultDetail = '';
-
-    hoursField.style.display = type === 'hourly' ? 'block' : 'none';
-
-    if (type === 'hourly') {
-      const hours = parseInt(document.getElementById('consult-hours').value) || 1;
-      consultCost = hours * 450;
-      consultDetail = `${hours} hr${hours > 1 ? 's' : ''} x $450`;
-    } else if (type === 'halfday') {
-      consultCost = 1800;
-      consultDetail = '4-hour deep-dive';
-    } else if (type === 'strategy') {
-      consultCost = 4500;
-      consultDetail = 'Full audit + roadmap';
-    } else if (type === 'monthly') {
-      consultCost = 2500;
-      consultDetail = 'Calls + async';
-    }
-
-    lines.push({
-      label: `Consulting`,
-      detail: consultDetail,
-      value: consultCost
-    });
-
-    total += consultCost;
-  }
-
-  // Render summary
-  const container = document.getElementById('summary-lines');
-  if (lines.length === 0) {
-    container.innerHTML = `<div class="summary-empty"><span class="icon">👆</span>Select a service above to get started</div>`;
-    return;
-  }
-
-  let html = '';
-  lines.forEach(l => {
-    html += `<div class="summary-line">
-      <span class="line-label">${l.label}<br><small>${l.detail}</small></span>
-      <span class="line-value">${fmt(l.value)}</span>
-    </div>`;
+  // Slider fills
+  ['ctr','over'].forEach(id => {
+    const r = $(id); if (!r) return;
+    const p = ((+r.value - +r.min) / (+r.max - +r.min)) * 100;
+    r.style.setProperty('--pct', p + '%');
   });
-
-  html += `<hr class="summary-divider">`;
-  html += `<div class="summary-total">
-    <span class="total-label">Estimated monthly</span>
-    <span class="total-value">${fmt(total)}<span>/mo</span></span>
-  </div>`;
-
-  // Add note about separate budgets
-  const hasBudgets = state.services.has('campaign') || state.services.has('meta') || (state.services.has('internal') && parseInt(document.getElementById('clip-budget').value) > 0);
-  if (hasBudgets) {
-    let budgetTotal = 0;
-    if (state.services.has('internal')) budgetTotal += parseInt(document.getElementById('clip-budget').value) || 0;
-    if (state.services.has('campaign')) budgetTotal += parseInt(document.getElementById('campaign-budget').value) || 0;
-    if (state.services.has('meta')) budgetTotal += parseInt(document.getElementById('ad-spend').value) || 0;
-    html += `<p class="summary-note">+ ${fmt(budgetTotal)} in client-funded budgets (campaign spend, ad spend) billed separately.</p>`;
-  }
-
-  html += `<a href="https://vision-clipping.com" class="cta-btn">Get started</a>`;
-
-  container.innerHTML = html;
 }
 
-// Initialize consulting hours visibility
-document.getElementById('consult-hours-field').style.display = 'none';
+// Wire inputs
+document.querySelectorAll('input').forEach(el => el.addEventListener('input', recalc));
+
+recalc();
 </script>
 
 </body>
