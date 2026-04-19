@@ -1,0 +1,936 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vision Clipping — Pricing Calculator</title>
+<meta name="description" content="Estimate your monthly investment for Vision Clipping's short-form content distribution services.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0b;
+    --bg-card: #111214;
+    --bg-card-hover: #16171a;
+    --bg-input: #1a1b1e;
+    --border: #2e3035;
+    --border-focus: #5865F2;
+    --text: #dcddde;
+    --text-dim: #72767d;
+    --text-bright: #fff;
+    --accent: #5865F2;
+    --accent-hover: #4752c4;
+    --green: #23a55a;
+    --gold: #FFD700;
+    --red: #ed4245;
+    --purple: #a78bfa;
+    --radius: 10px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 15px;
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  .page {
+    max-width: 880px;
+    margin: 0 auto;
+    padding: 48px 24px 80px;
+  }
+
+  /* Header */
+  .header {
+    text-align: center;
+    margin-bottom: 48px;
+  }
+  .header-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    margin-bottom: 16px;
+    background: rgba(88,101,242,0.1);
+    padding: 6px 14px;
+    border-radius: 20px;
+    border: 1px solid rgba(88,101,242,0.2);
+  }
+  .header-badge .dot {
+    width: 6px; height: 6px;
+    background: var(--green);
+    border-radius: 50%;
+    animation: pulse 2s ease infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+  .header h1 {
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--text-bright);
+    margin-bottom: 8px;
+    letter-spacing: -0.02em;
+  }
+  .header p {
+    font-size: 15px;
+    color: var(--text-dim);
+    max-width: 520px;
+    margin: 0 auto;
+  }
+
+  /* Service selector */
+  .services {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    margin-bottom: 40px;
+  }
+  .service-btn {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px 12px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+  }
+  .service-btn:hover {
+    background: var(--bg-card-hover);
+    border-color: #3e4046;
+  }
+  .service-btn.active {
+    border-color: var(--accent);
+    background: rgba(88,101,242,0.08);
+  }
+  .service-btn .icon {
+    font-size: 24px;
+    margin-bottom: 8px;
+    display: block;
+  }
+  .service-btn .label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-bright);
+    display: block;
+    margin-bottom: 2px;
+  }
+  .service-btn .sublabel {
+    font-size: 10px;
+    color: var(--text-dim);
+    display: block;
+  }
+  .service-btn .check {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    border: 1.5px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+  }
+  .service-btn.active .check {
+    background: var(--accent);
+    border-color: var(--accent);
+  }
+  .service-btn.active .check::after {
+    content: '';
+    width: 6px; height: 6px;
+    background: #fff;
+    border-radius: 50%;
+  }
+
+  /* Sections */
+  .calc-section {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 28px;
+    margin-bottom: 16px;
+    display: none;
+  }
+  .calc-section.visible {
+    display: block;
+  }
+  .calc-section h2 {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text-bright);
+    margin-bottom: 4px;
+  }
+  .calc-section .desc {
+    font-size: 13px;
+    color: var(--text-dim);
+    margin-bottom: 20px;
+  }
+
+  /* Form controls */
+  .field {
+    margin-bottom: 20px;
+  }
+  .field label {
+    display: block;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text);
+    margin-bottom: 6px;
+  }
+  .field .hint {
+    font-size: 11px;
+    color: var(--text-dim);
+    margin-top: 4px;
+  }
+
+  /* Package selector pills */
+  .pkg-pills {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+  }
+  .pkg-pill {
+    background: var(--bg-input);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: center;
+  }
+  .pkg-pill:hover {
+    border-color: #3e4046;
+    background: var(--bg-card-hover);
+  }
+  .pkg-pill.active {
+    border-color: var(--accent);
+    background: rgba(88,101,242,0.06);
+  }
+  .pkg-pill .pkg-name {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-dim);
+    margin-bottom: 4px;
+  }
+  .pkg-pill.active .pkg-name {
+    color: var(--accent);
+  }
+  .pkg-pill .pkg-price {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--text-bright);
+  }
+  .pkg-pill .pkg-price span {
+    font-size: 12px;
+    font-weight: 400;
+    color: var(--text-dim);
+  }
+  .pkg-pill .pkg-detail {
+    font-size: 11px;
+    color: var(--text-dim);
+    margin-top: 4px;
+  }
+  .pkg-pill .pkg-badge {
+    display: inline-block;
+    font-size: 9px;
+    font-weight: 600;
+    background: var(--accent);
+    color: #fff;
+    padding: 2px 7px;
+    border-radius: 3px;
+    margin-bottom: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  /* Sliders & inputs */
+  input[type="range"] {
+    -webkit-appearance: none;
+    width: 100%;
+    height: 4px;
+    background: var(--border);
+    border-radius: 2px;
+    outline: none;
+    margin: 8px 0;
+  }
+  input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 18px;
+    height: 18px;
+    background: var(--accent);
+    border-radius: 50%;
+    cursor: pointer;
+    border: 2px solid var(--bg-card);
+    box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+  }
+  .range-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    color: var(--text-dim);
+  }
+  .range-value {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--text-bright);
+    margin-bottom: 4px;
+  }
+
+  input[type="number"] {
+    background: var(--bg-input);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text-bright);
+    font-size: 15px;
+    font-family: inherit;
+    padding: 10px 14px;
+    width: 100%;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  input[type="number"]:focus {
+    border-color: var(--accent);
+  }
+
+  select {
+    background: var(--bg-input);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text-bright);
+    font-size: 14px;
+    font-family: inherit;
+    padding: 10px 14px;
+    width: 100%;
+    outline: none;
+    cursor: pointer;
+    -webkit-appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2372767d' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+  }
+  select:focus { border-color: var(--accent); }
+
+  /* Toggle */
+  .toggle-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 0;
+    border-top: 1px solid var(--border);
+  }
+  .toggle-row:first-child { border-top: none; }
+  .toggle-label {
+    font-size: 13px;
+    color: var(--text);
+  }
+  .toggle-label small {
+    display: block;
+    font-size: 11px;
+    color: var(--text-dim);
+    font-weight: 400;
+    margin-top: 2px;
+  }
+  .toggle {
+    position: relative;
+    width: 40px;
+    height: 22px;
+    flex-shrink: 0;
+  }
+  .toggle input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+  .toggle .slider {
+    position: absolute;
+    inset: 0;
+    background: var(--border);
+    border-radius: 11px;
+    cursor: pointer;
+    transition: 0.2s;
+  }
+  .toggle .slider::before {
+    content: '';
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    left: 3px;
+    top: 3px;
+    background: #fff;
+    border-radius: 50%;
+    transition: 0.2s;
+  }
+  .toggle input:checked + .slider {
+    background: var(--accent);
+  }
+  .toggle input:checked + .slider::before {
+    transform: translateX(18px);
+  }
+
+  /* Summary panel */
+  .summary {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 28px;
+    position: sticky;
+    top: 24px;
+    margin-top: 8px;
+  }
+  .summary h3 {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-bright);
+    margin-bottom: 20px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  .summary-line {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 8px 0;
+    font-size: 13px;
+  }
+  .summary-line .line-label {
+    color: var(--text);
+  }
+  .summary-line .line-label small {
+    color: var(--text-dim);
+    font-size: 11px;
+  }
+  .summary-line .line-value {
+    font-weight: 600;
+    color: var(--text-bright);
+    font-variant-numeric: tabular-nums;
+  }
+  .summary-divider {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 8px 0;
+  }
+  .summary-total {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 12px 0 4px;
+  }
+  .summary-total .total-label {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-bright);
+  }
+  .summary-total .total-value {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--text-bright);
+    font-variant-numeric: tabular-nums;
+  }
+  .summary-total .total-value span {
+    font-size: 14px;
+    font-weight: 400;
+    color: var(--text-dim);
+  }
+  .summary-note {
+    font-size: 11px;
+    color: var(--text-dim);
+    margin-top: 4px;
+    line-height: 1.5;
+  }
+  .summary-empty {
+    text-align: center;
+    padding: 24px 0;
+    color: var(--text-dim);
+    font-size: 13px;
+  }
+  .summary-empty .icon { font-size: 28px; margin-bottom: 8px; display: block; }
+
+  /* CTA */
+  .cta-btn {
+    display: block;
+    width: 100%;
+    padding: 14px;
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    margin-top: 16px;
+    transition: background 0.2s;
+    text-decoration: none;
+    text-align: center;
+  }
+  .cta-btn:hover { background: var(--accent-hover); }
+
+  /* Stats bar */
+  .stats-bar {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    margin-bottom: 40px;
+  }
+  .stat-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px;
+    text-align: center;
+  }
+  .stat-card .stat-value {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--text-bright);
+    margin-bottom: 2px;
+  }
+  .stat-card .stat-label {
+    font-size: 11px;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  /* Expansion accounts input */
+  .inline-field {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .inline-field input[type="number"] {
+    width: 100px;
+  }
+
+  /* Footer */
+  .footer {
+    text-align: center;
+    padding: 40px 0 0;
+    border-top: 1px solid var(--border);
+    margin-top: 40px;
+  }
+  .footer p {
+    font-size: 12px;
+    color: var(--text-dim);
+    margin-bottom: 4px;
+  }
+  .footer a {
+    color: var(--accent);
+    text-decoration: none;
+  }
+
+  /* Responsive */
+  @media (max-width: 700px) {
+    .services { grid-template-columns: repeat(2, 1fr); }
+    .stats-bar { grid-template-columns: repeat(2, 1fr); }
+    .pkg-pills { grid-template-columns: 1fr; }
+    .header h1 { font-size: 24px; }
+    .page { padding: 32px 16px 60px; }
+  }
+  @media (max-width: 420px) {
+    .services { grid-template-columns: 1fr 1fr; }
+    .service-btn { padding: 12px 8px; }
+    .service-btn .icon { font-size: 20px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="page">
+  <!-- Header -->
+  <div class="header">
+    <div class="header-badge">
+      <span class="dot"></span>
+      Vision Clipping
+    </div>
+    <h1>Pricing Calculator</h1>
+    <p>Estimate your monthly investment across our service lines. Select the services you need and configure your setup below.</p>
+  </div>
+
+  <!-- Social proof stats -->
+  <div class="stats-bar">
+    <div class="stat-card">
+      <div class="stat-value">1.5B+</div>
+      <div class="stat-label">Views generated</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value">$638K+</div>
+      <div class="stat-label">Paid to clippers</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value">23.5K</div>
+      <div class="stat-label">Videos created</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value">3</div>
+      <div class="stat-label">Platforms covered</div>
+    </div>
+  </div>
+
+  <!-- Service toggles -->
+  <div class="services">
+    <div class="service-btn" data-service="internal" onclick="toggleService('internal')">
+      <div class="check"></div>
+      <span class="icon">🎬</span>
+      <span class="label">Internal Team</span>
+      <span class="sublabel">Managed accounts</span>
+    </div>
+    <div class="service-btn" data-service="campaign" onclick="toggleService('campaign')">
+      <div class="check"></div>
+      <span class="icon">📢</span>
+      <span class="label">Public Campaign</span>
+      <span class="sublabel">Clipper network</span>
+    </div>
+    <div class="service-btn" data-service="meta" onclick="toggleService('meta')">
+      <div class="check"></div>
+      <span class="icon">📱</span>
+      <span class="label">Meta Ads</span>
+      <span class="sublabel">Paid amplification</span>
+    </div>
+    <div class="service-btn" data-service="consulting" onclick="toggleService('consulting')">
+      <div class="check"></div>
+      <span class="icon">🧠</span>
+      <span class="label">Consulting</span>
+      <span class="sublabel">Strategy & advisory</span>
+    </div>
+  </div>
+
+  <!-- Section 1: Internal Clipping Team -->
+  <div class="calc-section" id="sec-internal">
+    <h2>Internal Clipping Team</h2>
+    <p class="desc">We build and manage a private network of dedicated clipping accounts across TikTok, Instagram Reels, and YouTube Shorts. All packages are ops fees only — clipping budget is separate.</p>
+
+    <div class="field">
+      <label>Select package</label>
+      <div class="pkg-pills">
+        <div class="pkg-pill" data-pkg="starter" onclick="selectPkg('starter')">
+          <div class="pkg-name">Starter</div>
+          <div class="pkg-price">$4,000<span>/mo</span></div>
+          <div class="pkg-detail">3 managed accounts</div>
+        </div>
+        <div class="pkg-pill" data-pkg="growth" onclick="selectPkg('growth')">
+          <div class="pkg-badge">Most popular</div>
+          <div class="pkg-name">Growth</div>
+          <div class="pkg-price">$7,500<span>/mo</span></div>
+          <div class="pkg-detail">5 managed accounts</div>
+        </div>
+        <div class="pkg-pill" data-pkg="scale" onclick="selectPkg('scale')">
+          <div class="pkg-name">Scale</div>
+          <div class="pkg-price">$12,500<span>/mo</span></div>
+          <div class="pkg-detail">8-10 managed accounts</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="field" id="expansion-field" style="display:none">
+      <label>Additional accounts (Scale+ expansion)</label>
+      <div class="inline-field">
+        <input type="number" id="extra-accounts" min="0" max="40" step="10" value="0" onchange="calc()" oninput="calc()">
+        <span class="hint">+$1,500/mo per 10 extra accounts (up to 50 total)</span>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Monthly clipping budget</label>
+      <div class="range-value" id="clip-budget-display">$1,500</div>
+      <input type="range" id="clip-budget" min="0" max="15000" step="250" value="1500" oninput="calc()">
+      <div class="range-labels">
+        <span>$0</span>
+        <span>$15,000</span>
+      </div>
+      <p class="hint">Client-funded. We charge a 5% management fee on this budget.</p>
+    </div>
+  </div>
+
+  <!-- Section 2: Public Clipping Campaign -->
+  <div class="calc-section" id="sec-campaign">
+    <h2>Public Clipping Campaign</h2>
+    <p class="desc">Budget-based deployment across the Content Rewards clipper network. Clippers earn based on views generated. Minimum $5,000 campaign budget.</p>
+
+    <div class="field">
+      <label>Campaign budget</label>
+      <div class="range-value" id="campaign-budget-display">$15,000</div>
+      <input type="range" id="campaign-budget" min="5000" max="100000" step="1000" value="15000" oninput="calc()">
+      <div class="range-labels">
+        <span>$5,000</span>
+        <span>$100,000</span>
+      </div>
+      <p class="hint">5% management fee applies. Est. views: <strong id="est-views">7-10M</strong></p>
+    </div>
+  </div>
+
+  <!-- Section 3: Meta Ads -->
+  <div class="calc-section" id="sec-meta">
+    <h2>Meta Ads Management</h2>
+    <p class="desc">Top-performing organic clips become paid ad creatives. We manage the ad account, creative rotation, and budget allocation. 12% of ad spend, $1,500/mo minimum.</p>
+
+    <div class="field">
+      <label>Monthly ad spend</label>
+      <div class="range-value" id="ad-spend-display">$10,000</div>
+      <input type="range" id="ad-spend" min="1000" max="100000" step="500" value="10000" oninput="calc()">
+      <div class="range-labels">
+        <span>$1,000</span>
+        <span>$100,000</span>
+      </div>
+      <p class="hint">Client-funded ad spend. We charge 12% management fee ($1,500/mo floor).</p>
+    </div>
+  </div>
+
+  <!-- Section 4: Consulting -->
+  <div class="calc-section" id="sec-consulting">
+    <h2>Consulting</h2>
+    <p class="desc">Strategy, content architecture, distribution planning, and campaign structure. Advisory only — no execution at this tier.</p>
+
+    <div class="field">
+      <label>Consulting format</label>
+      <select id="consult-type" onchange="calc()">
+        <option value="hourly">Hourly — $450/hr</option>
+        <option value="halfday">Half day — $1,800 (4 hours)</option>
+        <option value="strategy">Strategy pack — $4,500 (full audit + 90-day roadmap)</option>
+        <option value="monthly" selected>Monthly advisory — $2,500/mo</option>
+      </select>
+    </div>
+
+    <div class="field" id="consult-hours-field">
+      <label>Estimated hours per month</label>
+      <input type="number" id="consult-hours" min="1" max="40" value="2" onchange="calc()" oninput="calc()">
+    </div>
+  </div>
+
+  <!-- Summary -->
+  <div class="summary" id="summary">
+    <h3>Monthly estimate</h3>
+    <div id="summary-lines">
+      <div class="summary-empty">
+        <span class="icon">👆</span>
+        Select a service above to get started
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div class="footer">
+    <p>All prices in USD. Packages require a 3-month minimum commitment.</p>
+    <p>Campaign budgets and ad spend are client-funded and billed separately.</p>
+    <p style="margin-top: 12px; color: #4e5058;">&copy; 2026 Vision Clipping</p>
+  </div>
+</div>
+
+<script>
+const state = {
+  services: new Set(),
+  pkg: null,
+};
+
+const PKG_PRICES = { starter: 4000, growth: 7500, scale: 12500 };
+const PKG_ACCOUNTS = { starter: '3', growth: '5', scale: '8-10' };
+const CONSULT_PRICES = { hourly: 450, halfday: 1800, strategy: 4500, monthly: 2500 };
+
+function fmt(n) {
+  return '$' + n.toLocaleString('en-US');
+}
+
+function toggleService(id) {
+  const btn = document.querySelector(`.service-btn[data-service="${id}"]`);
+  if (state.services.has(id)) {
+    state.services.delete(id);
+    btn.classList.remove('active');
+  } else {
+    state.services.add(id);
+    btn.classList.add('active');
+  }
+  document.getElementById('sec-' + id).classList.toggle('visible', state.services.has(id));
+
+  // Auto-select growth pkg if internal just toggled on and no pkg selected
+  if (id === 'internal' && state.services.has('internal') && !state.pkg) {
+    selectPkg('growth');
+  }
+
+  calc();
+}
+
+function selectPkg(pkg) {
+  state.pkg = pkg;
+  document.querySelectorAll('.pkg-pill').forEach(p => p.classList.remove('active'));
+  document.querySelector(`.pkg-pill[data-pkg="${pkg}"]`).classList.add('active');
+  document.getElementById('expansion-field').style.display = pkg === 'scale' ? 'block' : 'none';
+  if (pkg !== 'scale') document.getElementById('extra-accounts').value = 0;
+  calc();
+}
+
+function estimateViews(budget) {
+  // ~$1-2 CPM entertainment benchmark
+  const lowViews = budget / 2;
+  const highViews = budget / 1;
+  const fmtViews = (v) => {
+    if (v >= 1000000) return (v / 1000000).toFixed(v >= 10000000 ? 0 : 1) + 'M';
+    if (v >= 1000) return Math.round(v / 1000) + 'K';
+    return v.toString();
+  };
+  return fmtViews(lowViews) + '-' + fmtViews(highViews);
+}
+
+function calc() {
+  const lines = [];
+  let total = 0;
+
+  // Internal team
+  if (state.services.has('internal') && state.pkg) {
+    const pkgPrice = PKG_PRICES[state.pkg];
+    const extraAccounts = parseInt(document.getElementById('extra-accounts').value) || 0;
+    const expansionBlocks = Math.ceil(extraAccounts / 10);
+    const expansionCost = state.pkg === 'scale' ? expansionBlocks * 1500 : 0;
+    const clipBudget = parseInt(document.getElementById('clip-budget').value) || 0;
+    const clipFee = Math.round(clipBudget * 0.05);
+
+    lines.push({
+      label: `Internal team — ${state.pkg.charAt(0).toUpperCase() + state.pkg.slice(1)}`,
+      detail: `${PKG_ACCOUNTS[state.pkg]} accounts`,
+      value: pkgPrice
+    });
+
+    if (expansionCost > 0) {
+      lines.push({
+        label: `Scale+ expansion`,
+        detail: `+${extraAccounts} accounts`,
+        value: expansionCost
+      });
+    }
+
+    if (clipBudget > 0) {
+      lines.push({
+        label: `Clipping budget mgmt fee`,
+        detail: `5% of ${fmt(clipBudget)}`,
+        value: clipFee
+      });
+    }
+
+    total += pkgPrice + expansionCost + clipFee;
+
+    // Update display
+    document.getElementById('clip-budget-display').textContent = fmt(clipBudget);
+  }
+
+  // Public campaign
+  if (state.services.has('campaign')) {
+    const campaignBudget = parseInt(document.getElementById('campaign-budget').value) || 0;
+    const campaignFee = Math.round(campaignBudget * 0.05);
+
+    lines.push({
+      label: `Public campaign mgmt fee`,
+      detail: `5% of ${fmt(campaignBudget)} budget`,
+      value: campaignFee
+    });
+
+    total += campaignFee;
+
+    document.getElementById('campaign-budget-display').textContent = fmt(campaignBudget);
+    document.getElementById('est-views').textContent = estimateViews(campaignBudget);
+  }
+
+  // Meta ads
+  if (state.services.has('meta')) {
+    const adSpend = parseInt(document.getElementById('ad-spend').value) || 0;
+    const metaFee = Math.max(1500, Math.round(adSpend * 0.12));
+
+    lines.push({
+      label: `Meta ads management`,
+      detail: `12% of ${fmt(adSpend)} spend`,
+      value: metaFee
+    });
+
+    total += metaFee;
+
+    document.getElementById('ad-spend-display').textContent = fmt(adSpend);
+  }
+
+  // Consulting
+  if (state.services.has('consulting')) {
+    const type = document.getElementById('consult-type').value;
+    const hoursField = document.getElementById('consult-hours-field');
+    let consultCost = 0;
+    let consultDetail = '';
+
+    hoursField.style.display = type === 'hourly' ? 'block' : 'none';
+
+    if (type === 'hourly') {
+      const hours = parseInt(document.getElementById('consult-hours').value) || 1;
+      consultCost = hours * 450;
+      consultDetail = `${hours} hr${hours > 1 ? 's' : ''} x $450`;
+    } else if (type === 'halfday') {
+      consultCost = 1800;
+      consultDetail = '4-hour deep-dive';
+    } else if (type === 'strategy') {
+      consultCost = 4500;
+      consultDetail = 'Full audit + roadmap';
+    } else if (type === 'monthly') {
+      consultCost = 2500;
+      consultDetail = 'Calls + async';
+    }
+
+    lines.push({
+      label: `Consulting`,
+      detail: consultDetail,
+      value: consultCost
+    });
+
+    total += consultCost;
+  }
+
+  // Render summary
+  const container = document.getElementById('summary-lines');
+  if (lines.length === 0) {
+    container.innerHTML = `<div class="summary-empty"><span class="icon">👆</span>Select a service above to get started</div>`;
+    return;
+  }
+
+  let html = '';
+  lines.forEach(l => {
+    html += `<div class="summary-line">
+      <span class="line-label">${l.label}<br><small>${l.detail}</small></span>
+      <span class="line-value">${fmt(l.value)}</span>
+    </div>`;
+  });
+
+  html += `<hr class="summary-divider">`;
+  html += `<div class="summary-total">
+    <span class="total-label">Estimated monthly</span>
+    <span class="total-value">${fmt(total)}<span>/mo</span></span>
+  </div>`;
+
+  // Add note about separate budgets
+  const hasBudgets = state.services.has('campaign') || state.services.has('meta') || (state.services.has('internal') && parseInt(document.getElementById('clip-budget').value) > 0);
+  if (hasBudgets) {
+    let budgetTotal = 0;
+    if (state.services.has('internal')) budgetTotal += parseInt(document.getElementById('clip-budget').value) || 0;
+    if (state.services.has('campaign')) budgetTotal += parseInt(document.getElementById('campaign-budget').value) || 0;
+    if (state.services.has('meta')) budgetTotal += parseInt(document.getElementById('ad-spend').value) || 0;
+    html += `<p class="summary-note">+ ${fmt(budgetTotal)} in client-funded budgets (campaign spend, ad spend) billed separately.</p>`;
+  }
+
+  html += `<a href="https://vision-clipping.com" class="cta-btn">Get started</a>`;
+
+  container.innerHTML = html;
+}
+
+// Initialize consulting hours visibility
+document.getElementById('consult-hours-field').style.display = 'none';
+</script>
+
+</body>
+</html>
